@@ -1,0 +1,33 @@
+pragma solidity ^0.5.1;
+
+contract Hodl {
+    uint start;
+    uint weeksAfter = 7;
+
+    struct Senders {
+        address payable addr;
+        uint amount;
+    }
+    
+    Senders[] senders;
+    Senders s;
+
+    constructor () public {
+	    start = now;
+    }
+
+    function releaseFunds() public {
+        require(now >= start + weeksAfter * 1 weeks,"It is too early!");
+        for (uint i = 0; i < senders.length; ++i)
+            senders[i].addr.transfer(senders[i].amount);
+    }
+
+    //fallback function
+    function () external payable {
+        require(now <= start + weeksAfter * 1 days,"It is too early!");
+        
+        s.addr = msg.sender;
+        s.amount = msg.value;
+        senders.push(s);
+    }
+}
